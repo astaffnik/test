@@ -1,0 +1,2853 @@
+package oil_supply_chain_gis;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Currency;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.Timer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+import java.awt.Color;
+import java.awt.Font;
+import com.anylogic.engine.connectivity.ResultSet;
+import com.anylogic.engine.connectivity.Statement;
+import com.anylogic.engine.elements.*;
+import com.anylogic.engine.markup.Network;
+import com.anylogic.engine.Position;
+import com.anylogic.engine.markup.PedFlowStatistics;
+import com.anylogic.engine.markup.DensityMap;
+
+
+import static java.lang.Math.*;
+import static com.anylogic.engine.UtilitiesArray.*;
+import static com.anylogic.engine.UtilitiesCollection.*;
+import static com.anylogic.engine.presentation.UtilitiesColor.*;
+import static com.anylogic.engine.HyperArray.*;
+
+import com.anylogic.engine.*;
+import com.anylogic.engine.analysis.*;
+import com.anylogic.engine.connectivity.*;
+import com.anylogic.engine.database.*;
+import com.anylogic.engine.gis.*;
+import com.anylogic.engine.markup.*;
+import com.anylogic.engine.routing.*;
+import com.anylogic.engine.presentation.*;
+import com.anylogic.engine.gui.*;
+
+import com.anylogic.libraries.processmodeling.*;
+import com.anylogic.libraries.fluid.*;
+import com.anylogic.libraries.modules.markup_descriptors.*;
+
+import java.awt.geom.Arc2D;
+
+public class Main extends Agent
+{
+  // Parameters
+
+  public 
+int  retailerReorderLevel;
+
+  /**
+   * Returns default value for parameter <code>retailerReorderLevel</code>.
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  public int _retailerReorderLevel_DefaultValue_xjal() {
+    final Main self = this;
+    return 
+20 
+;
+  }
+
+  public void set_retailerReorderLevel( int value ) {
+    if (value == this.retailerReorderLevel) {
+      return;
+    }
+    int _oldValue_xjal = this.retailerReorderLevel;
+    this.retailerReorderLevel = value;
+    onChange_retailerReorderLevel_xjal( _oldValue_xjal );
+    onChange();
+  }
+
+  /**
+   * Calls "On change" action for parameter retailerReorderLevel.<br>
+   * Note that 'oldValue' in that action will be unavailable if this method is called by user
+   * (current parameter value will be passed as 'oldValue').<br>
+   * Please call <code>set_retailerReorderLevel()</code> method instead.
+   */
+  protected void onChange_retailerReorderLevel() {
+    onChange_retailerReorderLevel_xjal( retailerReorderLevel );
+  }
+
+  @AnyLogicInternalCodegenAPI
+  protected void onChange_retailerReorderLevel_xjal( int oldValue ) {
+	int index;
+    index = 0;
+    for ( Retailer self : retailers ) {
+      
+      int _value;
+      _value = retailerReorderLevel
+;
+      self.set_reorderLevel( _value );
+      index++;
+    }  
+  }
+
+
+  @AnyLogicCustomProposalType(AnyLogicCustomProposalType.Label.LITER_PER_SECOND)
+  public 
+double  meanDemand;
+
+  /**
+   * Returns default value for parameter <code>meanDemand</code>.
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  public double _meanDemand_DefaultValue_xjal() {
+    final Main self = this;
+    return 
+1 
+;
+  }
+
+  public double meanDemand( FlowRateUnits units ) {
+    return LITER_PER_SECOND.convertTo( this.meanDemand, units );
+  }
+
+  public void set_meanDemand( double value, FlowRateUnits units ) {
+    set_meanDemand( units.convertTo( value, LITER_PER_SECOND ) );
+  }
+
+  public void set_meanDemand( double value ) {
+    if (value == this.meanDemand) {
+      return;
+    }
+    double _oldValue_xjal = this.meanDemand;
+    this.meanDemand = value;
+    onChange_meanDemand_xjal( _oldValue_xjal );
+    onChange();
+  }
+
+  /**
+   * Calls "On change" action for parameter meanDemand.<br>
+   * Note that 'oldValue' in that action will be unavailable if this method is called by user
+   * (current parameter value will be passed as 'oldValue').<br>
+   * Please call <code>set_meanDemand()</code> method instead.
+   */
+  protected void onChange_meanDemand() {
+    onChange_meanDemand_xjal( meanDemand );
+  }
+
+  @AnyLogicInternalCodegenAPI
+  protected void onChange_meanDemand_xjal( double oldValue ) {
+	int index;
+    index = 0;
+    for ( Retailer self : retailers ) {
+      
+      double _value;
+      _value = meanDemand / 1000
+;
+      self.set_meanDemand( _value );
+      index++;
+    }  
+  }
+
+  
+  /**
+   * Internal method. Returns the units used in design-time for setting the code of this parameter (these units may be e.g. used for adaptation of dynamic parameter arguments)
+   */
+  @AnyLogicInternalCodegenAPI
+  public FlowRateUnits getUnitsForCodeOf_meanDemand() {
+    return LITER_PER_SECOND;
+  }
+  
+  /**
+   * Internal method. Returns the units of this parameter.
+   */
+  @AnyLogicInternalCodegenAPI
+  public FlowRateUnits getUnitsOf_meanDemand() {
+    return LITER_PER_SECOND;
+  }
+
+  @Override
+  public void setParametersToDefaultValues() {
+    super.setParametersToDefaultValues();
+    retailerReorderLevel = _retailerReorderLevel_DefaultValue_xjal();
+    meanDemand = _meanDemand_DefaultValue_xjal();
+  }
+
+  @Override
+  public boolean setParameter(String _name_xjal, Object _value_xjal, boolean _callOnChange_xjal) {
+    switch ( _name_xjal ) {
+    case "retailerReorderLevel":
+      if ( _callOnChange_xjal ) {
+        set_retailerReorderLevel( ((Number) _value_xjal).intValue() );
+      } else {
+        retailerReorderLevel = ((Number) _value_xjal).intValue();
+      }
+      return true;
+    case "meanDemand":
+      if ( _callOnChange_xjal ) {
+        set_meanDemand( ((Number) _value_xjal).doubleValue() );
+      } else {
+        meanDemand = ((Number) _value_xjal).doubleValue();
+      }
+      return true;
+    default:
+      return super.setParameter( _name_xjal, _value_xjal, _callOnChange_xjal );
+    }
+  }
+
+  @Override
+  public <T> T getParameter(String _name_xjal) {
+    Object _result_xjal;
+    switch ( _name_xjal ) {
+    case "retailerReorderLevel": _result_xjal = retailerReorderLevel; break;
+    case "meanDemand": _result_xjal = meanDemand; break;
+    default: _result_xjal = super.getParameter( _name_xjal ); break;
+    }
+    return (T) _result_xjal;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  private static String[] _parameterNames_xjal;
+
+  @Override
+  public String[] getParameterNames() {
+    String[] result = _parameterNames_xjal;
+    if (result == null) {
+      List<String> list = new ArrayList<>( Arrays.asList( super.getParameterNames() ) );
+      list.add( "retailerReorderLevel" );
+      list.add( "meanDemand" );
+      result = list.toArray( new String[ list.size() ] );
+      _parameterNames_xjal = result;
+    }
+    return result;
+  }
+  // Plain Variables
+
+  public 
+ViewArea 
+ selectedViewArea;
+  public 
+Color 
+ colorCrude;
+  public 
+Color 
+ colorRefined;
+
+  // Collection Variables
+  public 
+ArrayList <
+PipelineNode > collectionNodes = new ArrayList<PipelineNode>();
+  public 
+ArrayList <
+GISPoint > collectionRetailerGISPoints = new ArrayList<GISPoint>();
+  @AnyLogicInternalCodegenAPI
+  private static Map<String, IElementDescriptor> elementDesciptors_xjal = createElementDescriptors( Main.class );
+  
+  @AnyLogicInternalCodegenAPI
+  @Override
+  public Map<String, IElementDescriptor> getElementDesciptors() {
+    return elementDesciptors_xjal;
+  }
+
+
+  // Events
+	
+  @AnyLogicInternalCodegenAPI
+  public EventTimeout _retailersOutOfFuel_autoUpdateEvent_xjal = new EventTimeout(this);	
+  @AnyLogicInternalCodegenAPI
+  public EventTimeout _chartStorage_autoUpdateEvent_xjal = new EventTimeout(this);
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public String getNameOf( EventTimeout _e ) {
+     if( _e == _retailersOutOfFuel_autoUpdateEvent_xjal ) return "retailersOutOfFuel auto update event";
+     if( _e == _chartStorage_autoUpdateEvent_xjal ) return "chartStorage auto update event";
+    return super.getNameOf( _e );
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public EventTimeout.Mode getModeOf( EventTimeout _e ) {
+    if ( _e == _retailersOutOfFuel_autoUpdateEvent_xjal ) return EVENT_TIMEOUT_MODE_CYCLIC;
+    if ( _e == _chartStorage_autoUpdateEvent_xjal ) return EVENT_TIMEOUT_MODE_CYCLIC;
+    return super.getModeOf( _e );
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public double getFirstOccurrenceTime( EventTimeout _e ) {
+    double _t;
+    if ( _e == _retailersOutOfFuel_autoUpdateEvent_xjal ) {
+      _t = 
+1 
+;
+      _t = toModelTime( _t, HOUR );
+      return _t;
+    }
+    if ( _e == _chartStorage_autoUpdateEvent_xjal ) {
+      _t = 
+1 
+;
+      _t = toModelTime( _t, HOUR );
+      return _t;
+    }
+    return super.getFirstOccurrenceTime( _e );
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public double evaluateTimeoutOf( EventTimeout _e ) {
+    double _t;
+    if( _e == _retailersOutOfFuel_autoUpdateEvent_xjal) {
+      _t = 
+3 
+;
+      _t = toModelTime( _t, HOUR );
+      return _t;
+    }
+    if( _e == _chartStorage_autoUpdateEvent_xjal) {
+      _t = 
+3 
+;
+      _t = toModelTime( _t, HOUR );
+      return _t;
+    }
+    return super.evaluateTimeoutOf( _e );
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public void executeActionOf( EventTimeout _e ) {
+    if ( _e == _retailersOutOfFuel_autoUpdateEvent_xjal ) {
+      retailersOutOfFuel.update();
+      return;
+    }
+    if ( _e == _chartStorage_autoUpdateEvent_xjal ) {
+      chartStorage.updateData();
+      return;
+    }
+    super.executeActionOf( _e );
+  }
+
+
+  /** Internal constant, shouldn't be accessed by user */
+  @AnyLogicInternalCodegenAPI
+  protected static final int _STATECHART_COUNT_xjal = 0;
+
+
+  // Embedded Objects
+
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _retailers_animationSettings_xjal = new AgentAnimationSettings(1000L, 40000000L);
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _fuelTrucks_animationSettings_xjal = new AgentAnimationSettings(1000L, 40000000L);
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _storages_animationSettings_xjal = new AgentAnimationSettings(1000L, 40000000L);
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _refineries_animationSettings_xjal = new AgentAnimationSettings(1000L, 40000000L);
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _pipelines_animationSettings_xjal = new AgentAnimationSettings(1000L, 40000000L);
+  @AnyLogicInternalCodegenAPI
+  private static final AgentAnimationSettings _tankers_animationSettings_xjal = new AgentAnimationSettings(1000L, 4000000000L);
+
+  public String getNameOf( Agent ao ) {
+    return super.getNameOf( ao );
+  }
+
+  public AgentAnimationSettings getAnimationSettingsOf( Agent ao ) {
+    return super.getAnimationSettingsOf( ao );
+  }
+
+  public class _retailers_Population extends AgentArrayList<Retailer> {
+    _retailers_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public Retailer instantiateAgent( int index ) {
+    	return instantiate_retailers_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( Retailer agent, int index, TableInput tableInput ) {
+      setupParameters_retailers_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( Retailer agent, int index, TableInput tableInput ) {
+      doBeforeCreate_retailers_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return true;
+    }
+
+
+    public double totalStock() {
+      return _retailers_totalStock_xjal();
+    }
+
+    public int numberOutOfFuel() {
+      return _retailers_numberOutOfFuel_xjal();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733853193857095L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "Retailer")
+  public _retailers_Population retailers = new _retailers_Population( this );
+  public class _fuelTrucks_Population extends AgentArrayList<FuelTruck> {
+    _fuelTrucks_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public FuelTruck instantiateAgent( int index ) {
+    	return instantiate_fuelTrucks_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( FuelTruck agent, int index, TableInput tableInput ) {
+      setupParameters_fuelTrucks_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( FuelTruck agent, int index, TableInput tableInput ) {
+      doBeforeCreate_fuelTrucks_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return true;
+    }
+    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733852875090246L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "FuelTruck")
+  public _fuelTrucks_Population fuelTrucks = new _fuelTrucks_Population( this );
+  public class _storages_Population extends AgentArrayList<Storage> {
+    _storages_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public Storage instantiateAgent( int index ) {
+    	return instantiate_storages_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( Storage agent, int index, TableInput tableInput ) {
+      setupParameters_storages_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( Storage agent, int index, TableInput tableInput ) {
+      doBeforeCreate_storages_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return true;
+    }
+
+
+    public double totalCrude() {
+      return _storages_totalCrude_xjal();
+    }
+
+    public double totalRefinedIntermediate() {
+      return _storages_totalRefinedIntermediate_xjal();
+    }
+
+    public double totalRefinedTerminal() {
+      return _storages_totalRefinedTerminal_xjal();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729734063600053334L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "Storage")
+  public _storages_Population storages = new _storages_Population( this );
+  public class _refineries_Population extends AgentArrayList<Refinery> {
+    _refineries_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public Refinery instantiateAgent( int index ) {
+    	return instantiate_refineries_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( Refinery agent, int index, TableInput tableInput ) {
+      setupParameters_refineries_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( Refinery agent, int index, TableInput tableInput ) {
+      doBeforeCreate_refineries_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return true;
+    }
+
+
+    public double totalCrude() {
+      return _refineries_totalCrude_xjal();
+    }
+
+    public double totalRefined() {
+      return _refineries_totalRefined_xjal();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729734060089502995L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "Refinery")
+  public _refineries_Population refineries = new _refineries_Population( this );
+  public class _pipelines_Population extends AgentArrayList<Pipeline> {
+    _pipelines_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public Pipeline instantiateAgent( int index ) {
+    	return instantiate_pipelines_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( Pipeline agent, int index, TableInput tableInput ) {
+      setupParameters_pipelines_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( Pipeline agent, int index, TableInput tableInput ) {
+      doBeforeCreate_pipelines_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return false;
+    }
+    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729734059100895255L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "Pipeline")
+  public _pipelines_Population pipelines = new _pipelines_Population( this );
+  public class _tankers_Population extends AgentArrayList<Tanker> {
+    _tankers_Population( Agent owner ) {
+      super( owner );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public Tanker instantiateAgent( int index ) {
+    	return instantiate_tankers_xjal( index );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callSetupParameters( Tanker agent, int index, TableInput tableInput ) {
+      setupParameters_tankers_xjal( agent, index, tableInput );
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public void callCreate( Tanker agent, int index, TableInput tableInput ) {
+      doBeforeCreate_tankers_xjal( agent, index, tableInput );
+      agent.create();
+    }
+
+    @AnyLogicInternalCodegenAPI
+    public boolean isPresentationEnabled() {
+      return true;
+    }
+    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729734059017071958L;
+  }
+  
+  @AnyLogicCustomProposalType(value = AnyLogicCustomProposalType.Label.POPULATION, customText = "Tanker")
+  public _tankers_Population tankers = new _tankers_Population( this );
+
+  public String getNameOf( AgentList<?> aolist ) {
+    if( aolist == retailers ) return "retailers";
+    if( aolist == fuelTrucks ) return "fuelTrucks";
+    if( aolist == storages ) return "storages";
+    if( aolist == refineries ) return "refineries";
+    if( aolist == pipelines ) return "pipelines";
+    if( aolist == tankers ) return "tankers";
+    return super.getNameOf( aolist );
+  }
+  
+  public AgentAnimationSettings getAnimationSettingsOf( AgentList<?> aolist ) {
+    if( aolist == retailers ) return _retailers_animationSettings_xjal;
+    if( aolist == fuelTrucks ) return _fuelTrucks_animationSettings_xjal;
+    if( aolist == storages ) return _storages_animationSettings_xjal;
+    if( aolist == refineries ) return _refineries_animationSettings_xjal;
+    if( aolist == tankers ) return _tankers_animationSettings_xjal;
+    return super.getAnimationSettingsOf( aolist );
+  }
+
+  /**
+   * Returns the agent element at the specified position in retailers
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public Retailer retailers(int index) {
+    return retailers.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection retailers<br>
+   * @return newly created embedded object
+   */
+  public Retailer add_retailers() {
+    int index = retailers.size();
+    Retailer _result_xjal = instantiate_retailers_xjal( index );
+    retailers.callSetupParameters( _result_xjal, index );
+    retailers.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection retailers<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>retailers.size()</code> method <strong>before</strong> this method is called
+   * @param reorderLevel
+   * @param meanDemand
+   * @param capacity
+   * @return newly created embedded object
+   */
+  public Retailer add_retailers( int reorderLevel, double meanDemand, double capacity ) {
+    int index = retailers.size();
+    Retailer _result_xjal = instantiate_retailers_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.reorderLevel = reorderLevel;
+    _result_xjal.meanDemand = meanDemand;
+    _result_xjal.capacity = capacity;
+    // Finish embedded object creation
+    retailers.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection retailers<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object retailers - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to retailers
+   */
+  public boolean remove_retailers( Retailer object ) {
+    if( ! retailers._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+  /**
+   * Returns the agent element at the specified position in fuelTrucks
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public FuelTruck fuelTrucks(int index) {
+    return fuelTrucks.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection fuelTrucks<br>
+   * @return newly created embedded object
+   */
+  public FuelTruck add_fuelTrucks() {
+    int index = fuelTrucks.size();
+    FuelTruck _result_xjal = instantiate_fuelTrucks_xjal( index );
+    fuelTrucks.callSetupParameters( _result_xjal, index );
+    fuelTrucks.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection fuelTrucks<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>fuelTrucks.size()</code> method <strong>before</strong> this method is called
+   * @param capacity
+   * @param loadingRate
+   * @param retailer
+   * @return newly created embedded object
+   */
+  public FuelTruck add_fuelTrucks( double capacity, double loadingRate, Retailer retailer ) {
+    int index = fuelTrucks.size();
+    FuelTruck _result_xjal = instantiate_fuelTrucks_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.capacity = capacity;
+    _result_xjal.loadingRate = loadingRate;
+    _result_xjal.retailer = retailer;
+    // Finish embedded object creation
+    fuelTrucks.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection fuelTrucks<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object fuelTrucks - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to fuelTrucks
+   */
+  public boolean remove_fuelTrucks( FuelTruck object ) {
+    if( ! fuelTrucks._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+  /**
+   * Returns the agent element at the specified position in storages
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public Storage storages(int index) {
+    return storages.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection storages<br>
+   * @return newly created embedded object
+   */
+  public Storage add_storages() {
+    int index = storages.size();
+    Storage _result_xjal = instantiate_storages_xjal( index );
+    storages.callSetupParameters( _result_xjal, index );
+    storages.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection storages<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>storages.size()</code> method <strong>before</strong> this method is called
+   * @param locationName
+   * @param crudeOil
+   * @param terminal
+   * @param capacity
+   * @return newly created embedded object
+   */
+  public Storage add_storages( String locationName, boolean crudeOil, boolean terminal, double capacity ) {
+    int index = storages.size();
+    Storage _result_xjal = instantiate_storages_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.locationName = locationName;
+    _result_xjal.crudeOil = crudeOil;
+    _result_xjal.terminal = terminal;
+    _result_xjal.capacity = capacity;
+    // Finish embedded object creation
+    storages.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection storages<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object storages - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to storages
+   */
+  public boolean remove_storages( Storage object ) {
+    if( ! storages._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+  /**
+   * Returns the agent element at the specified position in refineries
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public Refinery refineries(int index) {
+    return refineries.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection refineries<br>
+   * @return newly created embedded object
+   */
+  public Refinery add_refineries() {
+    int index = refineries.size();
+    Refinery _result_xjal = instantiate_refineries_xjal( index );
+    refineries.callSetupParameters( _result_xjal, index );
+    refineries.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection refineries<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>refineries.size()</code> method <strong>before</strong> this method is called
+   * @param locationName
+   * @param refiningRate
+   * @param capacity
+   * @return newly created embedded object
+   */
+  public Refinery add_refineries( String locationName, double refiningRate, double capacity ) {
+    int index = refineries.size();
+    Refinery _result_xjal = instantiate_refineries_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.locationName = locationName;
+    _result_xjal.refiningRate = refiningRate;
+    _result_xjal.capacity = capacity;
+    // Finish embedded object creation
+    refineries.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection refineries<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object refineries - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to refineries
+   */
+  public boolean remove_refineries( Refinery object ) {
+    if( ! refineries._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+  /**
+   * Returns the agent element at the specified position in pipelines
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public Pipeline pipelines(int index) {
+    return pipelines.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection pipelines<br>
+   * @return newly created embedded object
+   */
+  public Pipeline add_pipelines() {
+    int index = pipelines.size();
+    Pipeline _result_xjal = instantiate_pipelines_xjal( index );
+    pipelines.callSetupParameters( _result_xjal, index );
+    pipelines.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection pipelines<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>pipelines.size()</code> method <strong>before</strong> this method is called
+   * @param throughput
+   * @param crudeOil
+   * @param sourceName
+   * @param destinationName
+   * @return newly created embedded object
+   */
+  public Pipeline add_pipelines( double throughput, boolean crudeOil, String sourceName, String destinationName ) {
+    int index = pipelines.size();
+    Pipeline _result_xjal = instantiate_pipelines_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.throughput = throughput;
+    _result_xjal.crudeOil = crudeOil;
+    _result_xjal.sourceName = sourceName;
+    _result_xjal.destinationName = destinationName;
+    // Finish embedded object creation
+    pipelines.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection pipelines<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object pipelines - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to pipelines
+   */
+  public boolean remove_pipelines( Pipeline object ) {
+    if( ! pipelines._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+  /**
+   * Returns the agent element at the specified position in tankers
+   * population.
+   * @see com.anylogic.engine.AgentList#get(int)
+   * @since 7.3.7
+   */
+  public Tanker tankers(int index) {
+    return tankers.get( index );
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection tankers<br>
+   * @return newly created embedded object
+   */
+  public Tanker add_tankers() {
+    int index = tankers.size();
+    Tanker _result_xjal = instantiate_tankers_xjal( index );
+    tankers.callSetupParameters( _result_xjal, index );
+    tankers.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method creates and adds new embedded object in the replicated embedded object collection tankers<br>
+   * This method uses given parameter values to setup created embedded object<br>
+   * Index of this new embedded object instance can be obtained through calling <code>tankers.size()</code> method <strong>before</strong> this method is called
+   * @param capacity
+   * @param unloadingRate
+   * @param loadingLat
+   * @param loadingLon
+   * @param destinationName
+   * @return newly created embedded object
+   */
+  public Tanker add_tankers( double capacity, double unloadingRate, double loadingLat, double loadingLon, String destinationName ) {
+    int index = tankers.size();
+    Tanker _result_xjal = instantiate_tankers_xjal( index );
+    // Setup parameters
+    _result_xjal.markParametersAreSet();
+    _result_xjal.capacity = capacity;
+    _result_xjal.unloadingRate = unloadingRate;
+    _result_xjal.loadingLat = loadingLat;
+    _result_xjal.loadingLon = loadingLon;
+    _result_xjal.destinationName = destinationName;
+    // Finish embedded object creation
+    tankers.callCreate( _result_xjal, index );
+    _result_xjal.start();
+    return _result_xjal;
+  }
+
+  /**
+   * This method removes the given embedded object from the replicated embedded object collection tankers<br>
+   * The given object is destroyed, but not immediately in common case.
+   * @param object the active object - element of replicated embedded object tankers - which should be removed
+   * @return <code>true</code> if object was removed successfully, <code>false</code> if it doesn't belong to tankers
+   */
+  public boolean remove_tankers( Tanker object ) {
+    if( ! tankers._remove( object ) ) {
+      return false;
+    }
+    object.removeFromFlowchart();
+    object.setDestroyed();
+    return true;
+  }
+
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected Retailer instantiate_retailers_xjal( final int index ) {
+    Retailer _result_xjal = new Retailer( getEngine(), this, retailers ) {
+
+      @AnyLogicInternalCodegenAPI
+      public FlowRateUnits getUnitsForCodeOf_meanDemand() {
+        return CUBIC_METER_PER_SECOND;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729733853193857095L;
+	};
+    
+    retailers._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_retailers_xjal( final Retailer self, final int index, TableInput _t ) {
+    self.reorderLevel = 
+retailerReorderLevel 
+;
+    self.meanDemand = 
+meanDemand / 1000 
+;
+    self.capacity = self._capacity_DefaultValue_xjal();
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_retailers_xjal( Retailer self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+    self.setLatLon( 0.0, 0.0 );
+
+    // Port connections
+  }
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected FuelTruck instantiate_fuelTrucks_xjal( final int index ) {
+    FuelTruck _result_xjal = new FuelTruck( getEngine(), this, fuelTrucks );
+    
+    fuelTrucks._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_fuelTrucks_xjal( final FuelTruck self, final int index, TableInput _t ) {
+    self.capacity = self._capacity_DefaultValue_xjal();
+    self.loadingRate = self._loadingRate_DefaultValue_xjal();
+    self.retailer = self._retailer_DefaultValue_xjal();
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_fuelTrucks_xjal( FuelTruck self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+    self.setLatLon( 0.0, 0.0 );
+
+    // Port connections
+  }
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected Storage instantiate_storages_xjal( final int index ) {
+    Storage _result_xjal = new Storage( getEngine(), this, storages );
+    
+    storages._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_storages_xjal( final Storage self, final int index, TableInput _t ) {
+    if (_t != null) {
+      self.crudeOil = _t.getValue( "", boolean.class );
+    } else {
+    self.crudeOil = self._crudeOil_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.terminal = _t.getValue( "", boolean.class );
+    } else {
+    self.terminal = self._terminal_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.capacity = _t.getValue( "", double.class );
+    } else {
+    self.capacity = self._capacity_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.locationName = _t.getValue( "", String.class );
+    } else {
+    self.locationName = self._locationName_DefaultValue_xjal();
+    }
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_storages_xjal( Storage self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+    self.setLatLon( 74.75500239983815, 179.86197306299098 );
+
+    // Port connections
+  }
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected Refinery instantiate_refineries_xjal( final int index ) {
+    Refinery _result_xjal = new Refinery( getEngine(), this, refineries );
+    
+    refineries._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_refineries_xjal( final Refinery self, final int index, TableInput _t ) {
+    if (_t != null) {
+      self.refiningRate = _t.getValue( "", double.class );
+    } else {
+    self.refiningRate = self._refiningRate_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.capacity = _t.getValue( "", double.class );
+    } else {
+    self.capacity = self._capacity_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.locationName = _t.getValue( "", String.class );
+    } else {
+    self.locationName = self._locationName_DefaultValue_xjal();
+    }
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_refineries_xjal( Refinery self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+    self.setLatLon( 63.24141382781938, 179.55161604096475 );
+
+    // Port connections
+  }
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected Pipeline instantiate_pipelines_xjal( final int index ) {
+    Pipeline _result_xjal = new Pipeline( getEngine(), this, pipelines );
+    
+    pipelines._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_pipelines_xjal( final Pipeline self, final int index, TableInput _t ) {
+    if (_t != null) {
+      self.throughput = _t.getValue( "", double.class );
+    } else {
+    self.throughput = self._throughput_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.crudeOil = _t.getValue( "", boolean.class );
+    } else {
+    self.crudeOil = self._crudeOil_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.sourceName = _t.getValue( "", String.class );
+    } else {
+    self.sourceName = self._sourceName_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.destinationName = _t.getValue( "", String.class );
+    } else {
+    self.destinationName = self._destinationName_DefaultValue_xjal();
+    }
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_pipelines_xjal( Pipeline self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+
+    // Port connections
+  }
+  /**
+   * Creates an embedded object instance and adds it to the end of replicated embedded object list<br>
+   * <i>This method should not be called by user</i>
+   */
+  protected Tanker instantiate_tankers_xjal( final int index ) {
+    Tanker _result_xjal = new Tanker( getEngine(), this, tankers );
+    
+    tankers._add( _result_xjal );
+
+    return _result_xjal;
+  }
+
+  /**
+   * Setups parameters of an embedded object instance<br>
+   * This method should not be called by user
+   */
+  private void setupParameters_tankers_xjal( final Tanker self, final int index, TableInput _t ) {
+    self.capacity = self._capacity_DefaultValue_xjal();
+    self.unloadingRate = self._unloadingRate_DefaultValue_xjal();
+    if (_t != null) {
+      self.loadingLat = _t.getValue( "", double.class );
+    } else {
+    self.loadingLat = self._loadingLat_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.loadingLon = _t.getValue( "", double.class );
+    } else {
+    self.loadingLon = self._loadingLon_DefaultValue_xjal();
+    }
+    if (_t != null) {
+      self.destinationName = _t.getValue( "", String.class );
+    } else {
+    self.destinationName = self._destinationName_DefaultValue_xjal();
+    }
+  }
+
+  /**
+   * Setups an embedded object instance<br>
+   * This method should not be called by user
+   */
+  @AnyLogicInternalCodegenAPI
+  private void doBeforeCreate_tankers_xjal( Tanker self, final int index, TableInput _t ) {
+    self.setEnvironment( this );
+    self.setLatLon( 57.4418308523709, -151.09073645527326 );
+
+    // Port connections
+  }
+
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _retailers_totalStock_xjal() {
+    double _value = 0;
+    for ( Retailer item : retailers ) {
+        _value += 
+item.tank.amount() 
+;
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private int _retailers_numberOutOfFuel_xjal() {
+    int _value = 0;
+    for ( Retailer item : retailers ) {
+      boolean _t = 
+item.tank.isEmpty() 
+;
+      if ( _t ) {
+        _value++;
+      }
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _storages_totalCrude_xjal() {
+    double _value = 0;
+    for ( Storage item : storages ) {
+      boolean _t = 
+item.crudeOil 
+;
+      if ( _t ) {
+        _value += 
+item.tank.amount() 
+;
+      }
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _storages_totalRefinedIntermediate_xjal() {
+    double _value = 0;
+    for ( Storage item : storages ) {
+      boolean _t = 
+! item.crudeOil && ! item.terminal 
+;
+      if ( _t ) {
+        _value += 
+item.tank.amount() 
+;
+      }
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _storages_totalRefinedTerminal_xjal() {
+    double _value = 0;
+    for ( Storage item : storages ) {
+      boolean _t = 
+! item.crudeOil && item.terminal 
+;
+      if ( _t ) {
+        _value += 
+item.tank.amount() 
+;
+      }
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _refineries_totalCrude_xjal() {
+    double _value = 0;
+    for ( Refinery item : refineries ) {
+        _value += 
+item.tankCrude.amount() 
+;
+    }
+    return _value;
+  }
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  private double _refineries_totalRefined_xjal() {
+    double _value = 0;
+    for ( Refinery item : refineries ) {
+        _value += 
+item.tankRefined.amount() 
+;
+    }
+    return _value;
+  }
+  // Functions
+
+  void setupStorages(  ) { 
+
+for (Storage storage : storages) {
+	collectionNodes.add(storage);
+} 
+  }
+
+  void setupRefineries(  ) { 
+
+for( Refinery refinery : refineries ) {
+	collectionNodes.add( refinery );
+} 
+  }
+
+  void setupPipelines(  ) { 
+
+for( Pipeline pipe : pipelines ) {	
+	pipe.initialize();
+} 
+  }
+
+  void createRetailers(  ) { 
+
+for( GISPoint loc : collectionRetailerGISPoints ) {
+	//setup retailer
+	Retailer retailer = add_retailers();
+	retailer.initialize( loc );
+	//setup truck for retailer
+	FuelTruck truck = add_fuelTrucks();
+	truck.set_retailer(retailer);
+	retailer.fuelTruck = truck;
+	//add chart item
+	chartRetailerState.addDataSet( retailer.dsAmount, retailer.toString() );
+}
+
+
+ 
+  }
+
+  
+PipelineNode 
+ findNode( String name ) { 
+
+PipelineNode result = null;
+for( PipelineNode node : collectionNodes ) {
+	if( node.locationName.equals( name ) ) {
+		result = node;
+	}
+}
+return result; 
+  }
+
+  void setupTankers(  ) { 
+
+for( Tanker tanker : tankers ) {
+	tanker.initialize();
+} 
+  }
+
+  void navigate( ViewArea viewArea ) { 
+
+selectedViewArea = viewArea;
+viewArea.navigateTo();
+groupMainMenu.setPos( viewArea.getX(), viewArea.getY() ); 
+  }
+  // Analysis Data Elements
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression0_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression0_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709782L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression0_dataSet_xjal_YValue() {
+    return 
+storages.totalCrude() 
+;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression1_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression1_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709783L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression1_dataSet_xjal_YValue() {
+    return 
+refineries.totalCrude() 
+;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression2_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression2_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709762L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression2_dataSet_xjal_YValue() {
+    return 
+refineries.totalRefined() 
+;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression3_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression3_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709763L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression3_dataSet_xjal_YValue() {
+    return 
+storages.totalRefinedIntermediate() 
+;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression4_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression4_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709762L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression4_dataSet_xjal_YValue() {
+    return 
+storages.totalRefinedTerminal() 
+;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public DataSet _chartStorage_expression5_dataSet_xjal = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), __chartStorage_expression5_dataSet_xjal_YValue() );
+      _lastUpdateX = time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729733784222709763L;
+  } );
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double __chartStorage_expression5_dataSet_xjal_YValue() {
+    return 
+retailers.totalStock() 
+;
+  }
+
+  public DataSet retailersOutOfFuel = new DataSet( 240, new DataUpdater_xjal() {
+    double _lastUpdateX = Double.NaN;
+    @Override
+    public void update( DataSet _d ) {
+      if ( time() == _lastUpdateX ) { return; }
+      _d.add( time(), _retailersOutOfFuel_YValue() );
+      _lastUpdateX = time();
+    }
+    @Override
+    public double getDataXValue() {
+      return time();
+    }    
+    /**
+     * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+     */ 
+    @AnyLogicInternalCodegenAPI
+    private static final long serialVersionUID = 729734063584323923L;
+  } );
+
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private double _retailersOutOfFuel_YValue() {
+    return 
+retailers.numberOutOfFuel() 
+;
+  }
+  
+  // View areas
+  public ViewArea viewMap = new ViewArea( this, null, 0, 0, 1200, 650 );
+  public ViewArea viewMetrics = new ViewArea( this, null, 0, 1500, 1200, 650 );
+  public ViewArea _origin_VA = new ViewArea( this, "[Origin]", 0, 0, 1200.0, 650.0 );
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public int getViewAreas(Map<String, ViewArea> _output) {
+    if ( _output != null ) {
+      _output.put( "viewMap", this.viewMap );
+      _output.put( "viewMetrics", this.viewMetrics );
+      _output.put( "_origin_VA", this._origin_VA );
+    }
+    return 3 + super.getViewAreas( _output );
+  }
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text3_Font = new Font("SansSerif", 0, 14 );
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text2_Font = new Font("SansSerif", 0, 26 );
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text_Font = _text2_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text1_Font = _text2_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text4_Font = _text3_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text5_Font = _text3_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text6_Font = _text3_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text7_Font = _text3_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text8_Font = _text3_Font;
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text9_Font = new Font("SansSerif", 1, 14 );
+  @AnyLogicInternalCodegenAPI
+  protected static final Font _text10_Font = _text3_Font;
+  protected static final Color _rectangle2_Fill_Color = new Color( 0xFF81C3FF, true );
+  protected static final Color _rectangle1_Fill_Color = new Color( 0xFF81C3FF, true );
+  protected static final Color _rectangle3_Fill_Color = new Color( 0xFF81C3FF, true );
+  protected static final Color _rectangle4_Fill_Color = new Color( 0x58808080, true );
+  @AnyLogicInternalCodegenAPI
+  protected static final int _slider = 1;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _slider1 = 2;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _chartStorage = 3;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _chartRetailerState = 4;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _map = 5;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text3 = 6;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _storages_presentation = 7;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _refineries_presentation = 8;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _retailers_presentation = 9;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _fuelTrucks_presentation = 10;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _tankers_presentation = 11;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle2 = 12;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle1 = 13;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle = 14;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text2 = 15;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text = 16;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text1 = 17;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle3 = 18;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _groupMainMenu = 19;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text4 = 20;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text5 = 21;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text6 = 22;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text7 = 23;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text8 = 24;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle4 = 25;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text9 = 26;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _text10 = 27;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _rectangle5 = 28;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas1 = 29;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas2 = 30;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas3 = 31;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas4 = 32;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas10 = 33;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas11 = 34;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas14 = 35;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas15 = 36;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas16 = 37;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas17 = 38;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas18 = 39;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas19 = 40;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas21 = 41;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas22 = 42;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas23 = 43;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas24 = 44;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas26 = 45;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas28 = 46;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas29 = 47;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas31 = 48;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas32 = 49;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas34 = 50;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas36 = 51;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas44 = 52;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas45 = 53;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas46 = 54;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas47 = 55;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas49 = 56;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas48 = 57;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas20 = 58;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas = 59;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas12 = 60;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas13 = 61;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas25 = 62;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas33 = 63;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas27 = 64;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas35 = 65;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas38 = 66;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas43 = 67;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _Gas42 = 68;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _CLDJ = 69;
+  @AnyLogicInternalCodegenAPI
+  protected static final int _ChabelleyAirfield = 70;
+
+  /** Internal constant, shouldn't be accessed by user */
+  @AnyLogicInternalCodegenAPI
+  protected static final int _SHAPE_NEXT_ID_xjal = 71;
+
+  @AnyLogicInternalCodegenAPI
+  public boolean isPublicPresentationDefined() {
+    return true;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public boolean isEmbeddedAgentPresentationVisible( Agent _a ) {
+    return super.isEmbeddedAgentPresentationVisible( _a );
+  }
+  @AnyLogicInternalCodegenAPI
+  private void _initialize_level_xjal() {
+	  level.addAll(map, text3, storages_presentation, refineries_presentation, retailers_presentation, fuelTrucks_presentation, tankers_presentation, groupMainMenu, text4, text5, text6, text7, text8, rectangle4, text9, text10, rectangle5, slider, slider1, chartStorage, chartRetailerState);
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public boolean onShapeClick( int _shape, int index, double clickx, double clicky ){
+    switch( _shape ){
+      case _rectangle2:
+        if (true) {
+          ShapeRectangle self = this.rectangle2;
+          
+navigate( viewMetrics ); 
+        }
+        break;
+      case _rectangle1:
+        if (true) {
+          ShapeRectangle self = this.rectangle1;
+          
+navigate( viewMap ); 
+        }
+        break;
+      default: return super.onShapeClick( _shape, index, clickx, clicky );
+ 	}
+ 	return false;
+  }
+  
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public void executeShapeControlAction( int _shape, int index, double value ) {
+    switch( _shape ) {
+      case _slider:
+        set_meanDemand( value );
+        break;
+      case _slider1:
+        set_retailerReorderLevel( (int) value );
+        break;
+      default:
+        super.executeShapeControlAction( _shape, index, value );
+        break;
+    }
+  }
+        
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public double getShapeControlDefaultValueDouble( int _shape, int index ) {
+    switch(_shape) {
+      case _slider: return 
+meanDemand 
+;
+      case _slider1: return 
+retailerReorderLevel 
+;
+      default: return super.getShapeControlDefaultValueDouble( _shape, index );
+    }
+  }
+
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _slider_SetDynamicParams_xjal( ShapeSlider shape ) {
+    {
+      @AnyLogicInternalCodegenAPI
+      double _min = 
+0 ;
+      @AnyLogicInternalCodegenAPI
+      double _max = 
+5 ;
+      shape.setRange( _min, _max );
+    }
+  }
+  
+  protected ShapeSlider slider;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _slider1_SetDynamicParams_xjal( ShapeSlider shape ) {
+    {
+      @AnyLogicInternalCodegenAPI
+      double _min = 
+10 ;
+      @AnyLogicInternalCodegenAPI
+      double _max = 
+70 ;
+      shape.setRange( _min, _max );
+    }
+  }
+  
+  protected ShapeSlider slider1;
+  protected TimeStackChart chartStorage;
+  @AnyLogicInternalCodegenAPI
+  private double _chartRetailerState_ColorRightHandSide( int _index ) {
+    switch (_index) {
+    case 0: return
+      
+0 
+;
+    case 1: return
+      
+0 
+;
+    }
+    throw new IndexOutOfBoundsException("Index: " + _index + ", size: " + 2);
+  }
+  
+  protected TimeColorChart chartRetailerState;
+  protected ShapeGISMap map;
+  protected ShapeText text3;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  protected ShapeEmbeddedObjectPresentation _storages_presentation_createShapeWithStaticProperties_xjal( final Agent _a, final int _index ) {
+    ShapeEmbeddedObjectPresentation shape = new ShapeEmbeddedObjectPresentation( Main.this, SHAPE_DRAW_2D3D, true, 74.75500239983815, 179.86197306299098, 0.0, 0.0,
+		false, true, _a );
+    return shape;
+  }
+
+  protected ShapeAgentPopulationGroup storages_presentation;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  protected ShapeEmbeddedObjectPresentation _refineries_presentation_createShapeWithStaticProperties_xjal( final Agent _a, final int _index ) {
+    ShapeEmbeddedObjectPresentation shape = new ShapeEmbeddedObjectPresentation( Main.this, SHAPE_DRAW_2D3D, true, 63.24141382781938, 179.55161604096475, 0.0, 0.0,
+		false, true, _a );
+    return shape;
+  }
+
+  protected ShapeAgentPopulationGroup refineries_presentation;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  protected ShapeEmbeddedObjectPresentation _retailers_presentation_createShapeWithStaticProperties_xjal( final Agent _a, final int _index ) {
+    ShapeEmbeddedObjectPresentation shape = new ShapeEmbeddedObjectPresentation( Main.this, SHAPE_DRAW_2D3D, true, 0.0, 0.0, 0.0, 0.0,
+		true, true, _a );
+    return shape;
+  }
+
+  protected ShapeAgentPopulationGroup retailers_presentation;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  protected ShapeEmbeddedObjectPresentation _fuelTrucks_presentation_createShapeWithStaticProperties_xjal( final Agent _a, final int _index ) {
+    ShapeEmbeddedObjectPresentation shape = new ShapeEmbeddedObjectPresentation( Main.this, SHAPE_DRAW_2D3D, true, 0.0, 0.0, 0.0, 0.0,
+		true, true, _a );
+    return shape;
+  }
+
+  protected ShapeAgentPopulationGroup fuelTrucks_presentation;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  protected ShapeEmbeddedObjectPresentation _tankers_presentation_createShapeWithStaticProperties_xjal( final Agent _a, final int _index ) {
+    ShapeEmbeddedObjectPresentation shape = new ShapeEmbeddedObjectPresentation( Main.this, SHAPE_DRAW_2D3D, true, 57.4418308523709, -151.09073645527326, 0.0, 0.0,
+		false, true, _a );
+    return shape;
+  }
+
+  protected ShapeAgentPopulationGroup tankers_presentation;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _rectangle2_SetDynamicParams_xjal( ShapeRectangle shape ) {
+    shape.setFillColor(
+selectedViewArea == viewMetrics ?
+	dodgerBlue : new Color(129, 195, 255) 
+);
+  }
+  
+  protected ShapeRectangle rectangle2;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _rectangle1_SetDynamicParams_xjal( ShapeRectangle shape ) {
+    shape.setFillColor(
+selectedViewArea == viewMap ?
+	dodgerBlue : new Color(129, 195, 255) 
+);
+  }
+  
+  protected ShapeRectangle rectangle1;
+  protected ShapeRectangle rectangle;
+  protected ShapeText text2;
+  protected ShapeText text;
+  protected ShapeText text1;
+  protected ShapeRectangle rectangle3;
+  protected ShapeGroup groupMainMenu;
+  protected ShapeText text4;
+  protected ShapeText text5;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _text6_SetDynamicParams_xjal( ShapeText shape ) {
+    shape.setText(
+meanDemand 
+);
+  }
+  
+  protected ShapeText text6;
+  protected ShapeText text7;
+  
+  /**
+   * <i>This method should not be called by user</i>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void _text8_SetDynamicParams_xjal( ShapeText shape ) {
+    shape.setText(
+retailerReorderLevel 
+);
+  }
+  
+  protected ShapeText text8;
+  protected ShapeRectangle rectangle4;
+  protected ShapeText text9;
+  protected ShapeText text10;
+  protected ShapeRectangle rectangle5;
+  protected GISPoint Gas1;
+  protected GISPoint Gas2;
+  protected GISPoint Gas3;
+  protected GISPoint Gas4;
+  protected GISPoint Gas10;
+  protected GISPoint Gas11;
+  protected GISPoint Gas14;
+  protected GISPoint Gas15;
+  protected GISPoint Gas16;
+  protected GISPoint Gas17;
+  protected GISPoint Gas18;
+  protected GISPoint Gas19;
+  protected GISPoint Gas21;
+  protected GISPoint Gas22;
+  protected GISPoint Gas23;
+  protected GISPoint Gas24;
+  protected GISPoint Gas26;
+  protected GISPoint Gas28;
+  protected GISPoint Gas29;
+  protected GISPoint Gas31;
+  protected GISPoint Gas32;
+  protected GISPoint Gas34;
+  protected GISPoint Gas36;
+  protected GISPoint Gas44;
+  protected GISPoint Gas45;
+  protected GISPoint Gas46;
+  protected GISPoint Gas47;
+  protected GISPoint Gas49;
+  protected GISPoint Gas48;
+  protected GISPoint Gas20;
+  protected GISPoint Gas;
+  protected GISPoint Gas12;
+  protected GISPoint Gas13;
+  protected GISPoint Gas25;
+  protected GISPoint Gas33;
+  protected GISPoint Gas27;
+  protected GISPoint Gas35;
+  protected GISPoint Gas38;
+  protected GISPoint Gas43;
+  protected GISPoint Gas42;
+  protected GISPoint CLDJ;
+  protected GISPoint ChabelleyAirfield;
+  protected com.anylogic.engine.markup.Level level;
+
+  private com.anylogic.engine.markup.Level[] _getLevels_xjal;
+
+  @Override
+  public com.anylogic.engine.markup.Level[] getLevels() {
+    return _getLevels_xjal;
+  }
+
+  @AnyLogicInternalCodegenAPI
+  private void _createPersistentElementsBP0_xjal() {
+    slider = new ShapeSlider(
+		    Main.this, true, 340.0, 1560.0, 
+			250.0, 40.0,
+            true, false,
+            0
+            , 5
+            , 0
+            , ShapeControl.TYPE_DOUBLE ) {
+      @Override
+      public void updateDynamicProperties() {
+        _slider_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }
+
+      @Override
+      @AnyLogicInternalCodegenAPI
+      public void action() {
+        executeShapeControlAction( _slider, 0, value );
+      }
+
+      @Override
+      public void setValueToDefault() {
+		setValue( limit( getMin(), getShapeControlDefaultValueDouble( _slider, 0 ), getMax() ) );
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063580457303L;
+    };
+    slider1 = new ShapeSlider(
+		    Main.this, true, 900.0, 1560.0, 
+			250.0, 40.0,
+            true, false,
+            10
+            , 70
+            , 0
+            , ShapeControl.TYPE_INT ) {
+      @Override
+      public void updateDynamicProperties() {
+        _slider1_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }
+
+      @Override
+      @AnyLogicInternalCodegenAPI
+      public void action() {
+        executeShapeControlAction( _slider1, 0, value );
+      }
+
+      @Override
+      public void setValueToDefault() {
+		setValue( limit( getMin(), getShapeControlDefaultValueDouble( _slider1, 0 ), getMax() ) );
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063580150850L;
+    };
+    text3 = new ShapeText(
+        SHAPE_DRAW_2D, true,70.0, 1610.0, 0.0, 0.0, 
+        black,"Crude oil and refined products",
+        _text3_Font, ALIGNMENT_LEFT );
+    rectangle2 = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,340.0, 0.0, 0.0, 0.0, 
+            null, _rectangle2_Fill_Color,
+			140.0, 50.0, 10.0, 1.0, LINE_STYLE_SOLID ) {
+      @Override
+      public void updateDynamicProperties() {
+        _rectangle2_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }
+
+      @Override
+      @AnyLogicInternalCodegenAPI
+      public boolean onClick( double clickx, double clicky ) {
+        return onShapeClick( _rectangle2, 0, clickx, clicky );
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063383345414L;
+    };
+    rectangle1 = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,250.0, 0.0, 0.0, 0.0, 
+            null, _rectangle1_Fill_Color,
+			90.0, 50.0, 10.0, 1.0, LINE_STYLE_SOLID ) {
+      @Override
+      public void updateDynamicProperties() {
+        _rectangle1_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }
+
+      @Override
+      @AnyLogicInternalCodegenAPI
+      public boolean onClick( double clickx, double clicky ) {
+        return onShapeClick( _rectangle1, 0, clickx, clicky );
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063383014422L;
+    };
+    rectangle = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,0.0, 0.0, 0.0, 0.0, 
+            null, dodgerBlue,
+			250.0, 50.0, 10.0, 1.0, LINE_STYLE_SOLID );
+    text2 = new ShapeText(
+        SHAPE_DRAW_2D, true,30.0, 10.0, 0.0, 0.0, 
+        white,"Oil Supply Chain",
+        _text2_Font, ALIGNMENT_LEFT );
+    text = new ShapeText(
+        SHAPE_DRAW_2D, true,270.0, 10.0, 0.0, 0.0, 
+        white,"Map",
+        _text_Font, ALIGNMENT_LEFT );
+    text1 = new ShapeText(
+        SHAPE_DRAW_2D, true,360.0, 10.0, 0.0, 0.0, 
+        white,"Statistics",
+        _text1_Font, ALIGNMENT_LEFT );
+    rectangle3 = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,480.0, 0.0, 0.0, 0.0, 
+            null, _rectangle3_Fill_Color,
+			720.0, 50.0, 10.0, 1.0, LINE_STYLE_SOLID );
+    text4 = new ShapeText(
+        SHAPE_DRAW_2D, true,70.0, 1900.0, 0.0, 0.0, 
+        black,"Retailers state",
+        _text4_Font, ALIGNMENT_LEFT );
+    text5 = new ShapeText(
+        SHAPE_DRAW_2D, true,70.0, 1570.0, 0.0, 0.0, 
+        black,"Mean demand per retailer, l/sec",
+        _text5_Font, ALIGNMENT_LEFT );
+    text6 = new ShapeText(
+        SHAPE_DRAW_2D, true,280.0, 1570.0, 0.0, 0.0, 
+        steelBlue,"1",
+        _text6_Font, ALIGNMENT_LEFT ) {
+      @Override
+      public void updateDynamicProperties() {
+        _text6_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063580396822L;
+    };
+    text7 = new ShapeText(
+        SHAPE_DRAW_2D, true,630.0, 1570.0, 0.0, 0.0, 
+        black,"Retailer Reorder level, % of capacity:",
+        _text7_Font, ALIGNMENT_LEFT );
+    text8 = new ShapeText(
+        SHAPE_DRAW_2D, true,870.0, 1570.0, 0.0, 0.0, 
+        steelBlue,"20",
+        _text8_Font, ALIGNMENT_LEFT ) {
+      @Override
+      public void updateDynamicProperties() {
+        _text8_SetDynamicParams_xjal( this );
+        super.updateDynamicProperties();
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734063580150806L;
+    };
+    rectangle4 = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,1000.0, 50.0, 0.0, 0.0, 
+            null, _rectangle4_Fill_Color,
+			200.0, 20.0, 10.0, 1.0, LINE_STYLE_SOLID );
+    text9 = new ShapeText(
+        SHAPE_DRAW_2D, true,1190.0, 50.0, 0.0, 0.0, 
+        white,"Click any object to inspect",
+        _text9_Font, ALIGNMENT_RIGHT );
+    text10 = new ShapeText(
+        SHAPE_DRAW_2D, true,200.0, 1900.0, 0.0, 0.0, 
+        black,"- out of fuel",
+        _text10_Font, ALIGNMENT_LEFT );
+    rectangle5 = new ShapeRectangle(
+       SHAPE_DRAW_2D3D, true,175.0, 1906.0, 0.0, 0.0, 
+            null, fireBrick,
+			20.0, 8.0, 10.0, 1.0, LINE_STYLE_SOLID );
+    Gas1 = new GISPoint( map, true, 32.43530477246682, -102.48564071224794, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, 5156, North Broadway, Little Vietnam, Chicago, Cook County, Illinois, 60640, United States of America" );
+    Gas1.setVisible( false );
+    Gas2 = new GISPoint( map, true, 44.45657135, -110.827036772438, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Grand Loop Road, Yellowstone National Park, Teton County, Wyoming, United States of America" );
+    Gas2.setVisible( false );
+    Gas3 = new GISPoint( map, true, 42.2582444, -71.1611213, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Washington Street, Germantown, West Roxbury, Boston, Suffolk County, Massachusetts, 02132, United States of America" );
+    Gas3.setVisible( false );
+    Gas4 = new GISPoint( map, true, 39.97273581127745, -82.95965316796863, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Hard Rd, Columbus, Franklin County, Ohio, 43016, United States of America" );
+    Gas4.setVisible( false );
+    Gas10 = new GISPoint( map, true, 36.0408256, -86.7450159, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Old Hickory Boulevard, Nashville-Davidson, Davidson, Tennessee, 37027, United States of America" );
+    Gas10.setVisible( false );
+    Gas11 = new GISPoint( map, true, 36.669208124404264, -83.04752798857942, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "gas station, Hixson Pike, Chattanooga, Hamilton, Tennessee, 37343, United States of America" );
+    Gas11.setVisible( false );
+    Gas14 = new GISPoint( map, true, 42.3060188, -83.2458114, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Michigan Avenue, Dearborn, Wayne County, Michigan, 48124, United States of America" );
+    Gas14.setVisible( false );
+    Gas15 = new GISPoint( map, true, 36.0681848, -94.1581934, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, 395, North College Avenue, Fayetteville, Washington County, Arkansas, 72701, United States of America" );
+    Gas15.setVisible( false );
+    Gas16 = new GISPoint( map, true, 38.87822295, -77.1119482226115, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, North Glebe Road, Clarendon, Alcova Heights, Arlington, Arlington County, Virginia, 22203, United States of America" );
+    Gas16.setVisible( false );
+    Gas17 = new GISPoint( map, true, 44.0601653, -121.294203115156, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas station, Northeast Greenwood Avenue, Bend, Deschutes, Oregon, 97701, United States of America" );
+    Gas17.setVisible( false );
+    Gas18 = new GISPoint( map, true, 44.92179695, -93.328847276905, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, France Avenue South, Southwest, Edina, Hennepin County, Minnesota, 55431, United States of America" );
+    Gas18.setVisible( false );
+    Gas19 = new GISPoint( map, true, 37.95123985, -122.549894425294, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Kent Avenue, Kentfield, Marin County, California, 94957, United States of America" );
+    Gas19.setVisible( false );
+    Gas21 = new GISPoint( map, true, 40.6061106, -80.281483, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, South Brodhead Road, Aliquippa, Beaver County, penna, 15001, United States of America" );
+    Gas21.setVisible( false );
+    Gas22 = new GISPoint( map, true, 27.7968424, -82.3353499, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, US 301, Brandon, Hillsborough County, Florida, 33592, United States of America" );
+    Gas22.setVisible( false );
+    Gas23 = new GISPoint( map, true, 38.10266682419231, -100.79293054479079, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Cowley Road, Brandon, Hillsborough County, Florida, 33569, United States of America" );
+    Gas23.setVisible( false );
+    Gas24 = new GISPoint( map, true, 42.3221705, -88.2737865, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, South Front Street, Prairie Grove, McHenry, Illinois, 60050, United States of America" );
+    Gas24.setVisible( false );
+    Gas26 = new GISPoint( map, true, 46.551217892636934, -103.86974733549891, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Willow Tree Road, Wesley Hills, Town of Ramapo, Rockland, New York, 10952, United States of America" );
+    Gas26.setVisible( false );
+    Gas28 = new GISPoint( map, true, 37.33373808764197, -108.82937994558901, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas station, King's Highway, Quarryville, Town of Saugerties, Ulster, New York, 12477, United States of America" );
+    Gas28.setVisible( false );
+    Gas29 = new GISPoint( map, true, 43.87999080714895, -100.21284786961888, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, West Park Avenue, Long Beach, Nassau County, New York, 11561, United States of America" );
+    Gas29.setVisible( false );
+    Gas31 = new GISPoint( map, true, 42.4404222, -85.4217752, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, West Hickory Road, Hickory Corners, Barry County, Michigan, 49060, United States of America" );
+    Gas31.setVisible( false );
+    Gas32 = new GISPoint( map, true, 45.82645725, -88.0623624058719, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, 4th Street, Iron Mountain, Dickinson County, Michigan, 49801, United States of America" );
+    Gas32.setVisible( false );
+    Gas34 = new GISPoint( map, true, 45.4181947, -122.455203031663, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Clackamas Highway, Damascus Heights, Damascus, Clackamas County, Oregon, 97089, United States of America" );
+    Gas34.setVisible( false );
+    Gas36 = new GISPoint( map, true, 38.5104196, -90.3737461, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas station, Mattis Road, Concord, St. Louis County, Missouri, 63128, United States of America" );
+    Gas36.setVisible( false );
+    Gas44 = new GISPoint( map, true, 34.5119287, -84.9172929, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Red Bud Road Northeast, Redbud, Gordon County, Georgia, 30734, United States of America" );
+    Gas44.setVisible( false );
+    Gas45 = new GISPoint( map, true, 32.46262050038186, -97.44407374766925, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Dews Pond Road Northeast, Calhoun, Gordon, Georgia, 30701, United States of America" );
+    Gas45.setVisible( false );
+    Gas46 = new GISPoint( map, true, 40.7809746, -74.1811489293579, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas station, Franklin Street, Belleville, Essex, New Jersey, 07003, United States of America" );
+    Gas46.setVisible( false );
+    Gas47 = new GISPoint( map, true, 41.0887991, -112.0441961, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "gas station, Antelope Drive, Syracuse, Davis County, Utah, 84075, United States of America" );
+    Gas47.setVisible( false );
+    Gas49 = new GISPoint( map, true, 43.3760511, -72.3343011, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Washington Street, Claremont, Sullivan County, New Hampshire, 03743, United States of America" );
+    Gas49.setVisible( false );
+    Gas48 = new GISPoint( map, true, 34.5425788, -93.4522245, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas station, Joplin Cemetery Road, Joplin, Montgomery County, Arkansas, United States of America" );
+    Gas48.setVisible( false );
+    Gas20 = new GISPoint( map, true, 34.021874, -86.023584, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, North Franklin Street, Gadsden, Etowah County, Alabama, 35901, United States of America" );
+    Gas20.setVisible( false );
+    Gas = new GISPoint( map, true, 40.714968803892134, -104.4351329613273, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "Gas Station, Bridgeport, Lancaster County, penna, 17602, United States of America" );
+    Gas.setVisible( false );
+    Gas12 = new GISPoint( map, true, 30.870591720012033, -88.38973826841226, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas12.setVisible( false );
+    Gas13 = new GISPoint( map, true, 30.125430695541336, -92.59853206595268, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas13.setVisible( false );
+    Gas25 = new GISPoint( map, true, 32.974595221393436, -91.15716432706897, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas25.setVisible( false );
+    Gas33 = new GISPoint( map, true, 33.16785199806057, -108.51123190322882, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas33.setVisible( false );
+    Gas27 = new GISPoint( map, true, 31.80619996890046, -111.3939673809962, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas27.setVisible( false );
+    Gas35 = new GISPoint( map, true, 41.45225361364954, -120.33044736207519, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas35.setVisible( false );
+    Gas38 = new GISPoint( map, true, 38.98739639137287, -96.92263528260379, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas38.setVisible( false );
+    Gas43 = new GISPoint( map, true, 31.80619996890046, -100.266608436814, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas43.setVisible( false );
+    Gas42 = new GISPoint( map, true, 34.175447303562805, -89.48517774996388, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    Gas42.setVisible( false );
+    CLDJ = new GISPoint( map, true, 11.5395, 43.1425, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+    ChabelleyAirfield = new GISPoint( map, true, 11.517633, 43.065068, 3, defaultGisFillColor, brown, 1.0, LINE_STYLE_SOLID, "" );
+  }
+
+  @AnyLogicInternalCodegenAPI
+  private void _createPersistentElementsAP0_xjal() {
+    {
+    DataSet _item;
+    List<DataSet> _items = new ArrayList<>( 6 );
+    _items.add( _chartStorage_expression0_dataSet_xjal ); 
+    _items.add( _chartStorage_expression1_dataSet_xjal ); 
+    _items.add( _chartStorage_expression2_dataSet_xjal ); 
+    _items.add( _chartStorage_expression3_dataSet_xjal ); 
+    _items.add( _chartStorage_expression4_dataSet_xjal ); 
+    _items.add( _chartStorage_expression5_dataSet_xjal ); 
+    List<String> _titles = new ArrayList<>( 6 );
+    _titles.add( "Crude oil on storage" );
+    _titles.add( "Crude oil in refineries" );
+    _titles.add( "Refined product in refineries" );
+    _titles.add( "Product in intermediate storages" );
+    _titles.add( "Product in termial storages" );
+    _titles.add( "Retailers stock" );
+    List<Color> _colors = new ArrayList<>( 6 );
+    _colors.add( black );
+    _colors.add( darkGray );
+    _colors.add( orange );
+    _colors.add( new Color( 0xFFF7B50C, true ) );
+    _colors.add( gold );
+    _colors.add( new Color( 0xFFD5FB04, true ) );
+    chartStorage = new TimeStackChart(
+		    Main.this, true, 10.0, 1600.0, 
+			1170.0, 270.0,
+            null, null,
+            60.0, 30.0,
+			1080.0, 180.0, null, black, black,
+            30.0, Chart.SOUTH,
+            
+1 
+             * month(), Chart.WINDOW_MOVES_WITH_TIME, Chart.DEFAULT_DATE_PATTERN, Chart.SCALE_AUTO
+            , 0, Chart.GRID_DEFAULT, Chart.GRID_DEFAULT,
+            darkGray, darkGray, _items, _titles, _colors );
+    }
+    {
+    DataSet _item;
+    List<DataSet> _items = new ArrayList<>( 0 );
+    List<String> _titles = new ArrayList<>( 0 );
+    chartRetailerState = new TimeColorChart(
+		    Main.this, true, 20.0, 1890.0, 
+			1160.0, 240.0,
+            null, null,
+            50.0, 30.0,
+			1080.0, 180.0, null, black, black,
+            30.0, Chart.NONE,
+            
+1 
+             * month(), Chart.WINDOW_MOVES_WITH_TIME, Chart.DEFAULT_DATE_PATTERN, 0.8, Chart.GRID_DEFAULT, darkGray, darkGray, _items, _titles, null, new ColorMapping[] {
+              new ColorMapping( ColorMappingOperator.GREATER, _chartRetailerState_ColorRightHandSide( 0 ), floralWhite ),
+              new ColorMapping( ColorMappingOperator.LESS_OR_EQUALS, _chartRetailerState_ColorRightHandSide( 1 ), fireBrick ), } );
+    }
+    storages_presentation = new ShapeAgentPopulationGroup(this, SHAPE_DRAW_2D3D, true, storages) {
+    
+      @Override
+      public ShapeEmbeddedObjectPresentation createShapeWithStaticProperties_xjal( final Agent _a, int index ) {
+        ShapeEmbeddedObjectPresentation _e = _storages_presentation_createShapeWithStaticProperties_xjal( _a, index );
+        return _e;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734059099651335L;
+    };
+    refineries_presentation = new ShapeAgentPopulationGroup(this, SHAPE_DRAW_2D3D, true, refineries) {
+    
+      @Override
+      public ShapeEmbeddedObjectPresentation createShapeWithStaticProperties_xjal( final Agent _a, int index ) {
+        ShapeEmbeddedObjectPresentation _e = _refineries_presentation_createShapeWithStaticProperties_xjal( _a, index );
+        return _e;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734059088100610L;
+    };
+    retailers_presentation = new ShapeAgentPopulationGroup(this, SHAPE_DRAW_2D3D, true, retailers) {
+    
+      @Override
+      public ShapeEmbeddedObjectPresentation createShapeWithStaticProperties_xjal( final Agent _a, int index ) {
+        ShapeEmbeddedObjectPresentation _e = _retailers_presentation_createShapeWithStaticProperties_xjal( _a, index );
+        return _e;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729733852874288471L;
+    };
+    fuelTrucks_presentation = new ShapeAgentPopulationGroup(this, SHAPE_DRAW_2D3D, true, fuelTrucks) {
+    
+      @Override
+      public ShapeEmbeddedObjectPresentation createShapeWithStaticProperties_xjal( final Agent _a, int index ) {
+        ShapeEmbeddedObjectPresentation _e = _fuelTrucks_presentation_createShapeWithStaticProperties_xjal( _a, index );
+        return _e;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729733852875090963L;
+    };
+    tankers_presentation = new ShapeAgentPopulationGroup(this, SHAPE_DRAW_2D3D, true, tankers) {
+    
+      @Override
+      public ShapeEmbeddedObjectPresentation createShapeWithStaticProperties_xjal( final Agent _a, int index ) {
+        ShapeEmbeddedObjectPresentation _e = _tankers_presentation_createShapeWithStaticProperties_xjal( _a, index );
+        return _e;
+      }      
+      /**
+       * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+       */ 
+      @AnyLogicInternalCodegenAPI
+      private static final long serialVersionUID = 729734059305412690L;
+    };
+    {
+    groupMainMenu = new ShapeGroup( Main.this, SHAPE_DRAW_2D3D, true, 0.0, 0.0, 0.0, 0.0
+	
+	     , rectangle2
+	     , rectangle1
+	     , rectangle
+	     , text2
+	     , text
+	     , text1
+	     , rectangle3 );
+    }
+  }
+
+  @AnyLogicInternalCodegenAPI
+  private void _createPersistentElementsBS0_xjal() {
+  }
+
+
+  // Static initialization of persistent elements
+  private void instantiatePersistentElements_xjal() {
+    map = new ShapeGISMap(
+		Main.this, SHAPE_DRAW_2D, true, -10.0, -60.0,
+			1200.0, 650.0, "/oil_supply_chain_gis/", new ShapeGISMap.Layer[] { }, 23.801796720052018, 52.75033876248702, 5.0E-8, null, 
+		white, true, 
+		TileURLProviderType.ANYLOGIC,
+		new AnyLogicOnlineRouteProvider(RoutingMethod.FASTEST, RouteProviderTransportType.CAR), 
+		1000, false );
+    map.setSearchBounds( 25.0, -130.0, 50.0, -60.0 );
+    level = new com.anylogic.engine.markup.Level(this, "level", SHAPE_DRAW_2D3D, 0.0, true, true);  			
+	_getLevels_xjal = new com.anylogic.engine.markup.Level[] { 
+      level };
+    _createPersistentElementsBP0_xjal();
+  }
+  protected ShapeTopLevelPresentationGroup presentation;
+  protected ShapeModelElementsGroup icon; 
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public ShapeTopLevelPresentationGroup getPresentationShape() {
+    return presentation;
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public ShapeModelElementsGroup getModelElementsShape() {
+    return icon;
+  }
+
+	
+
+
+  /**
+   * Constructor
+   */
+  public Main( Engine engine, Agent owner, AgentList<? extends Main> ownerPopulation ) {
+    super( engine, owner, ownerPopulation );
+    instantiateBaseStructureThis_xjal();
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public void onOwnerChanged_xjal() {
+    super.onOwnerChanged_xjal();
+    setupReferences_xjal();
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public void instantiateBaseStructure_xjal() {
+    super.instantiateBaseStructure_xjal();
+    instantiateBaseStructureThis_xjal();
+  }
+  
+  @AnyLogicInternalCodegenAPI
+  private void instantiateBaseStructureThis_xjal() {
+	instantiatePersistentElements_xjal();
+    setupReferences_xjal();
+  }
+  
+  @AnyLogicInternalCodegenAPI
+  private void setupReferences_xjal() {
+  }
+  
+  /**
+   * Simple constructor. Please add created agent to some population by calling goToPopulation() function
+   */
+  public Main() {
+  }
+  
+  /**
+   * Simple constructor. Please add created agent to some population by calling goToPopulation() function
+   */
+  public Main( int retailerReorderLevel, double meanDemand ) {
+    markParametersAreSet();
+    this.retailerReorderLevel = retailerReorderLevel;
+    this.meanDemand = meanDemand;
+  }
+  
+  /**
+   * Creating embedded object instances
+   */
+  @AnyLogicInternalCodegenAPI
+  private void instantiatePopulations_xjal() {
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public void doCreate() {
+    super.doCreate();
+    // Creating embedded object instances
+    instantiatePopulations_xjal();
+    // Assigning initial values for plain variables
+    setupPlainVariables_Main_xjal();
+    // Dynamic initialization of persistent elements
+    _createPersistentElementsAP0_xjal();
+	_initialize_level_xjal();
+    level.initialize();
+    presentation = new ShapeTopLevelPresentationGroup( Main.this, true, 0, 0, 0, 0 , level );
+    presentation.getConfiguration3D().setBackgroundColor( new Color( 0xFFA3C8DE, true ) );
+    addAll( collectionRetailerGISPoints, new GISPoint[] 
+{ ChabelleyAirfield, CLDJ } 
+    );
+    // Creating embedded object instances
+    instantiatePopulations_xjal();
+    icon = new ShapeModelElementsGroup( Main.this, getElementProperty( "oil_supply_chain_gis.Main.icon", IElementDescriptor.MODEL_ELEMENT_DESCRIPTORS )  );
+    icon.setIconOffsets( 0.0, 0.0 );
+    // Environments setup
+    setupSpace( map );
+    disableSteps();
+    setNetworkUserDefined();
+	 // Port connectors with non-replicated objects
+    // Creating replicated embedded objects
+    retailers.setEnvironment( this );
+    for ( int i = 0; i < retailers.size(); i++ ) {
+      Retailer _a = retailers.get(i); 
+      setupParameters_retailers_xjal( _a, i, null );
+      doBeforeCreate_retailers_xjal( _a, i, null );
+      _a.createAsEmbedded();
+    }
+    fuelTrucks.setEnvironment( this );
+    for ( int i = 0; i < fuelTrucks.size(); i++ ) {
+      FuelTruck _a = fuelTrucks.get(i); 
+      setupParameters_fuelTrucks_xjal( _a, i, null );
+      doBeforeCreate_fuelTrucks_xjal( _a, i, null );
+      _a.createAsEmbedded();
+    }
+    storages.setEnvironment( this );
+    error("Population storages is configured to be initialized from not existing database table");
+    refineries.setEnvironment( this );
+    error("Population refineries is configured to be initialized from not existing database table");
+    pipelines.setEnvironment( this );
+    error("Population pipelines is configured to be initialized from not existing database table");
+    tankers.setEnvironment( this );
+    error("Population tankers is configured to be initialized from not existing database table");
+    setupInitialConditions_xjal( Main.class );
+    // Dynamic initialization of persistent elements
+    _createPersistentElementsBS0_xjal();
+    slider.setValueToDefault();
+    slider1.setValueToDefault();
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public void doStart() {
+    super.doStart();
+    _retailersOutOfFuel_autoUpdateEvent_xjal.start();
+    _chartStorage_autoUpdateEvent_xjal.start();
+    for (Agent embeddedObject : retailers) {
+      embeddedObject.startAsEmbedded();
+    }
+    for (Agent embeddedObject : fuelTrucks) {
+      embeddedObject.startAsEmbedded();
+    }
+    for (Agent embeddedObject : storages) {
+      embeddedObject.startAsEmbedded();
+    }
+    for (Agent embeddedObject : refineries) {
+      embeddedObject.startAsEmbedded();
+    }
+    for (Agent embeddedObject : pipelines) {
+      embeddedObject.startAsEmbedded();
+    }
+    for (Agent embeddedObject : tankers) {
+      embeddedObject.startAsEmbedded();
+    }
+  }
+ 
+  @AnyLogicInternalCodegenAPI
+  public void onStartup() {
+    super.onStartup();
+    
+setupStorages();
+setupRefineries();
+setupPipelines();
+createRetailers();
+setupTankers(); 
+  }
+
+  /**
+   * Assigning initial values for plain variables<br>
+   * <em>This method isn't designed to be called by user and may be removed in future releases.</em>
+   */
+  @AnyLogicInternalCodegenAPI
+  public void setupPlainVariables_xjal() {
+    setupPlainVariables_Main_xjal();
+  }
+
+  /**
+   * Assigning initial values for plain variables<br>
+   * <em>This method isn't designed to be called by user and may be removed in future releases.</em>
+   */
+  @AnyLogicInternalCodegenAPI
+  private void setupPlainVariables_Main_xjal() {
+    selectedViewArea = 
+viewMap 
+;
+    colorCrude = 
+dimGray 
+;
+    colorRefined = 
+orange 
+;
+  }
+
+  // User API -----------------------------------------------------
+  @AnyLogicInternalCodegenAPI
+  public static LinkToAgentAnimationSettings _connections_commonAnimationSettings_xjal = new LinkToAgentAnimationSettingsImpl( false, black, 1.0, LINE_STYLE_SOLID, ARROW_NONE, 0.0 );
+
+  public LinkToAgentCollection<Agent, Agent> connections = new LinkToAgentStandardImpl<Agent, Agent>(this, _connections_commonAnimationSettings_xjal);
+  @Override
+  public LinkToAgentCollection<? extends Agent, ? extends Agent> getLinkToAgentStandard_xjal() {
+    return connections;
+  }
+
+
+  @AnyLogicInternalCodegenAPI
+  public void drawLinksToAgents(boolean _underAgents_xjal, LinkToAgentAnimator _animator_xjal) {
+    super.drawLinksToAgents(_underAgents_xjal, _animator_xjal);
+    if ( _underAgents_xjal ) {
+      _animator_xjal.drawLink( this, connections, true, true );
+    }
+  }
+
+  public List<Object> getEmbeddedObjects() {
+    List<Object> list = super.getEmbeddedObjects();
+    if (list == null) {
+      list = new LinkedList<>();
+    }
+    list.add( retailers );
+    list.add( fuelTrucks );
+    list.add( storages );
+    list.add( refineries );
+    list.add( pipelines );
+    list.add( tankers );
+    return list;
+  }
+
+  public AgentList<? extends Main> getPopulation() {
+    return (AgentList<? extends Main>) super.getPopulation();
+  }
+
+  public List<? extends Main> agentsInRange( double distance ) {
+    return (List<? extends Main>) super.agentsInRange( distance );
+  }
+
+  @Override
+  @AnyLogicInternalCodegenAPI
+  public boolean isLoggingToDB(EventOriginator _e) {
+    if ( _e == _retailersOutOfFuel_autoUpdateEvent_xjal ) return false;
+    if ( _e == _chartStorage_autoUpdateEvent_xjal ) return false;
+    return super.isLoggingToDB( _e );
+  }
+
+  @AnyLogicInternalCodegenAPI
+  public void onDestroy() {
+    _retailersOutOfFuel_autoUpdateEvent_xjal.onDestroy();
+    _chartStorage_autoUpdateEvent_xjal.onDestroy();
+    for (Agent _item : retailers) {
+      _item.onDestroy();
+    }
+    for (Agent _item : fuelTrucks) {
+      _item.onDestroy();
+    }
+    for (Agent _item : storages) {
+      _item.onDestroy();
+    }
+    for (Agent _item : refineries) {
+      _item.onDestroy();
+    }
+    for (Agent _item : pipelines) {
+      _item.onDestroy();
+    }
+    for (Agent _item : tankers) {
+      _item.onDestroy();
+    }
+    map.destroy();
+  // Analysis Data Elements
+    _chartStorage_expression0_dataSet_xjal.destroyUpdater_xjal();
+    _chartStorage_expression1_dataSet_xjal.destroyUpdater_xjal();
+    _chartStorage_expression2_dataSet_xjal.destroyUpdater_xjal();
+    _chartStorage_expression3_dataSet_xjal.destroyUpdater_xjal();
+    _chartStorage_expression4_dataSet_xjal.destroyUpdater_xjal();
+    _chartStorage_expression5_dataSet_xjal.destroyUpdater_xjal();
+    retailersOutOfFuel.destroyUpdater_xjal();
+    logToDB( retailersOutOfFuel, "retailersOutOfFuel" );
+    logToDB( _chartStorage_expression0_dataSet_xjal, "chartStorage : Crude oil on storage" );
+    logToDB( _chartStorage_expression1_dataSet_xjal, "chartStorage : Crude oil in refineries" );
+    logToDB( _chartStorage_expression2_dataSet_xjal, "chartStorage : Refined product in refineries" );
+    logToDB( _chartStorage_expression3_dataSet_xjal, "chartStorage : Product in intermediate storages" );
+    logToDB( _chartStorage_expression4_dataSet_xjal, "chartStorage : Product in termial storages" );
+    logToDB( _chartStorage_expression5_dataSet_xjal, "chartStorage : Retailers stock" );
+    super.onDestroy();
+  }
+
+  @AnyLogicInternalCodegenAPI
+  @Override
+  public void doFinish() {
+    super.doFinish();
+    for (Agent _item : retailers) {
+      _item.doFinish();
+    }
+    for (Agent _item : fuelTrucks) {
+      _item.doFinish();
+    }
+    for (Agent _item : storages) {
+      _item.doFinish();
+    }
+    for (Agent _item : refineries) {
+      _item.doFinish();
+    }
+    for (Agent _item : pipelines) {
+      _item.doFinish();
+    }
+    for (Agent _item : tankers) {
+      _item.doFinish();
+    }
+  }
+  
+  /**
+   * This number is here for model snapshot storing purpose. It shouldn't be modified by user.
+   */ 
+  @AnyLogicInternalCodegenAPI
+  private static final long serialVersionUID = 729733853210949654L;
+
+}
